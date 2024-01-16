@@ -141,7 +141,7 @@ DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_ROTATION, (dataset) => {
     infoDiv.innerHTML = `
     <h2>Rotation:</h2>
     <ul>
-    ${maps.reduce((acc, map) => (acc + `<li><h3>Map Id: ${map.MapId} Game Mode: ${map.GameMode}</h3><button class="remove-button" disabled data-id="${map.MapId}" data-mode="${map.GameMode}">Remove</button></li>`), "") || "<li>No Maps in rotation</li>"}
+    ${maps.reduce((acc, map) => (acc + `<li><h3>Map Id: ${map.MapId} Game Mode: ${map.GameMode}</h3><button class="remove-button" data-id="${map.MapId}" data-mode="${map.GameMode}">Remove</button></li>`), "") || "<li>No Maps in rotation</li>"}
     </ul>`;
     infoDiv.querySelectorAll(".remove-button").forEach(b => b.addEventListener("click", e => {
         e.preventDefault();
