@@ -6,9 +6,10 @@ const path = require("path");
 const HTTP_PORT = process.env.HTTP_PORT || 8080;
 const RCON_PORT = process.env.RCON_PORT || 15777;
 const STEAM_API_KEY = process.env.STEAM_API_KEY;
+const SERVER_ADDRESS = process.env.SERVER_ADDRESS || "127.0.0.1";
 const WWWROOT = path.join(__dirname, "wwwroot");
 
-const rcon = new RCon("192.168.12.7", RCON_PORT, "PTECSVR");
+const rcon = new RCon(SERVER_ADDRESS, RCON_PORT, "PTECSVR");
 const server = new WebServer(HTTP_PORT, WWWROOT, STEAM_API_KEY, rcon);
 
 // Attempts to reconnect if RCon gets disconnected
