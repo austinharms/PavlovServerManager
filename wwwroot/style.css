@@ -1,0 +1,118 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 16px;
+    color: black;
+    margin: 0;
+    padding: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+ul,
+li,
+div,
+button {
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    margin: 0 0.5em;
+    padding: 0.05em 0.25em;
+}
+
+ul {
+    list-style-type: none;
+    margin-left: 0.5em;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+main div {
+    padding: 0.5em;
+    margin: 0.5em;
+    border: 3px solid black;
+    border-radius: 0.75em;
+}
+
+li h3,
+li h4 {
+    display: inline-block;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.workshop-search-wrapper {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #FFFFFFF0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.workshop-search {
+    position: absolute;
+    top: 5vh;
+    bottom: 5vh;
+    left: 5vw;
+    right: 5vw;
+    width: 90vw;
+    height: 90vh;
+    background-color: #FFFFFF;
+    overflow: auto;
+}
+
+.workshop-results {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.workshop-results ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.workshop-result {
+    position: relative;
+    overflow: hidden;
+    background-color: #000000;
+    aspect-ratio: 1;
+    margin: 0.5em;
+    border-radius: 0.75em;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: #FFFFFF;
+}
+
+.workshop-result div {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
+    background-color: #FFFFFF90;
+    margin: 0;
+    padding: 0.25em;
+}
