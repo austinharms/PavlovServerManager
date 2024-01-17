@@ -5,7 +5,6 @@ const DEFAULT_DATASETS = Object.freeze({
     BAN_LIST: "BanList",
     MOD_LIST: "ModList",
     MAP_ROTATION: "MapRotation",
-    HELP_INFO: "Help",
     MAP_LIST: "MapList",
     MODE_LIST: "ModeList",
     WORKSHOP_RESULTS: "WorkshopSearchResults",
@@ -199,5 +198,4 @@ if (localModeList !== null) {
     [DEFAULT_DATASETS.BAN_LIST, PavlovServer.getBans, 30000, []],
     [DEFAULT_DATASETS.MOD_LIST, PavlovServer.getModerators, 30000, []],
     [DEFAULT_DATASETS.MAP_ROTATION, PavlovServer.getMapRotation, 10000, []],
-    [DEFAULT_DATASETS.HELP_INFO, PavlovServer.getHelp, 30000, []],
 ].forEach(args => refreshSets[args[0]] = new AutoRefreshSet(...args));
