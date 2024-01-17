@@ -40,8 +40,10 @@
                 </ul>
             </div>
             <div class="map-controls">
-                <h3 class="inline-block">Map Rotation:</h3>
-                <button class="rotate-button">Rotate</button>
+                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="rotateMap">
+                    <h3 class="inline-block">Map Rotation:</h3>
+                    <button>Rotate</button>
+                </form>
                 <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="2" data-command="switchMap">
                     <h3 class="inline-block">Swap: </h3>
                     <select class="param-select" data-type-id="3" name="0"></select>
