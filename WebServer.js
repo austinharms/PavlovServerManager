@@ -100,6 +100,8 @@ WebServer.prototype._requestHandler = async function (req, res) {//(req: http.In
             this._writeFileResponse(res, 200, "index.html", WebServer.CONTENT_TYPE.HTML);
         } else if (url === "/script.js") {
             this._writeFileResponse(res, 200, "script.js", WebServer.CONTENT_TYPE.SCRIPT);
+        } else if (url === "/dombuilder.js") {
+            this._writeFileResponse(res, 200, "dombuilder.js", WebServer.CONTENT_TYPE.SCRIPT);
         } else if (url === "/pavlovserver.js") {
             this._writeFileResponse(res, 200, "pavlovserver.js", WebServer.CONTENT_TYPE.SCRIPT);
         } else if (url === "/style.css") {
@@ -146,7 +148,7 @@ WebServer.prototype._requestHandler = async function (req, res) {//(req: http.In
             const jsonResponse = {
                 totalCount: payload.response.total,
                 next: payload.response.next_cursor,
-                maps: payload.response.publishedfiledetails.map(r => ({ id: r.publishedfileid, title: r.title, image: r.preview_url, description: r.file_description, tags: (r.tags || []).map(t => t.display_name) })),
+                maps: (payload.response.publishedfiledetails || []).map(r => ({ id: r.publishedfileid, title: r.title, image: r.preview_url, description: r.file_description, tags: (r.tags || []).map(t => t.display_name) })),
             };
 
             // Hack: we encode the json here as there may be special characters that cause errors later

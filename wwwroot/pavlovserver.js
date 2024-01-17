@@ -1,5 +1,5 @@
 const PavlovServer = {
-    PARAM_TYPE: Object.freeze({ PLAYER_ID: 0, MODE: 1, TEAM: 2, MAP: 3, SKIN: 4, TTT_ROLE: 5, ITEM: 6, BOOL: 7, INT: 8, STRING: 9, AMMO_LIMIT: 10 }),
+    PARAM_TYPE: Object.freeze({ PLAYER_ID: 0, MODE: 1, TEAM: 2, MAP: 3, SKIN: 4, TTT_ROLE: 5, ITEM: 6, AMMO_LIMIT: 7, INT: 8, STRING: 9, BOOL: 10 }),
     DEFAULT_TEAMS: Object.freeze([{ name: "Blue", id: 0 }, { name: "Red", id: 1 }]),
     DEFAULT_AMMO_LIMITS: Object.freeze([{ name: "Unlimited", id: 0 }, { name: "Limited Generic", id: 1 }, { name: "Limited Specific", id: 2 }, { name: "Custom", id: 3 }, { name: "Limited Special", id: 4 }, { name: "Boxless", id: 5 }]),
     DEFAULT_SKINS: Object.freeze([{ id: "aurora", name: "aurora" }, { id: "clown", name: "clown" }, { id: "cop", name: "cop" }, { id: "farmer", name: "farmer" }, { id: "german", name: "german" }, { id: "kevin", name: "kevin" }, { id: "naked", name: "naked" }, { id: "nato", name: "nato" }, { id: "nato1", name: "nato1" }, { id: "nato2", name: "nato2" }, { id: "nato3", name: "nato3" }, { id: "nato4", name: "nato4" }, { id: "prisoner", name: "prisoner" }, { id: "russian", name: "russian" }, { id: "russian1", name: "russian1" }, { id: "russian2", name: "russian2" }, { id: "russian3", name: "russian3" }, { id: "russian4", name: "russian4" }, { id: "soviet", name: "soviet" }, { id: "us", name: "us" }]),
@@ -7,10 +7,12 @@ const PavlovServer = {
     DEFAULT_MODES: Object.freeze([{ id: "DM", name: "Death match" }, { id: "KOTH", name: "King of the hill" }, { id: "GUN", name: "Gun game" }, { id: "OITC", name: "One in the chamber" }, { id: "SND", name: "Search and destroy" }, { id: "TANKTDM", name: "WW2 Team Death Match" }, { id: "TDM", name: "Team Death Match" }, { id: "TTT", name: "Trouble in Terrorist Town" }, { id: "TTTclassic", name: "TTT with only innocent/traitor/detective" }, { id: "WW2GUN", name: "WW2 gun game" }, { id: "ZWV", name: "Zombie wave survival" }, { id: "HIDE", name: "The Hidden" }, { id: "INFECTION", name: "Hidden infection" }, { id: "PUSH", name: "Push" }, { id: "PH", name: "Prop hunt" }]),
     DEFAULT_MAPS: Object.freeze([{ id: "Bridge", name: "Bridge" }, { id: "Bunker", name: "Bunker" }, { id: "Datacenter", name: "Datacenter" }, { id: "Industry", name: "Industry" }, { id: "Sand", name: "Sand" }, { id: "Santorini", name: "Santorini" }, { id: "Siberia", name: "Siberia" }, { id: "Station", name: "Station" }, { id: "Hospital", name: "Hospital" }, { id: "Range", name: "Range" }, { id: "WW2range", name: "WW2range" }, { id: "Tutorial", name: "Tutorial" }, { id: "Killhouse ", name: "Killhouse " }, { id: "containeryard", name: "containeryard" }, { id: "Stalingrad_night", name: "Stalingrad_night" }, { id: "Datacenter_night", name: "Datacenter_night" }, { id: "santorini_night", name: "santorini_night" }, { id: "sand_night", name: "sand_night" }, { id: "Siberia_night", name: "Siberia_night" }, { id: "station_night", name: "station_night" }, { id: "industry_night", name: "industry_night" }, { id: "containeryard_night", name: "containeryard_night" }]),
     COMMAND_LIST: [],
+    DEFAULTS: [],
 };
 
 // Build the PavlovServer API
 (() => {
+    PavlovServer.DEFAULTS = Object.freeze([[], PavlovServer.DEFAULT_MODES, PavlovServer.DEFAULT_TEAMS, PavlovServer.DEFAULT_MAPS, PavlovServer.DEFAULT_SKINS, PavlovServer.DEFAULT_TTT_ROLES, [], PavlovServer.DEFAULT_AMMO_LIMITS, [], [], []]);
     // Base command all other commands use
     PavlovServer.sendCommand= async (cmd, ...args) => {
         const queryString = `/command?cmd=${encodeURI(args.reduce((acc, param) => `${acc} ${param}`, cmd))}`;

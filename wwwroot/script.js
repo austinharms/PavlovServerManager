@@ -12,6 +12,7 @@ const DEFAULT_DATASETS = Object.freeze({
 });
 
 const refreshSets = {};
+let activeWorkshopMapSelect = null;
 const DatasetManager = {
     _datasets: {},
     getOrCreateDataset: (datasetName) => {
@@ -80,152 +81,16 @@ AutoRefreshSet.prototype.refresh = async function () {
     DatasetManager.setData(this.datasetName, data);
 };
 
-DatasetManager.addDataListener(DEFAULT_DATASETS.SERVER_INFO, (dataset) => {
-    const infoDiv = document.querySelector(".server-info");
-    const info = dataset.data;
-    infoDiv.innerHTML = `
-    <h2>Info</h2>
-    <h3>Server Name: ${info.ServerName}</h3>
-    <h3>Player Count: ${info.PlayerCount}</h3>
-    <h3>Game Mode: ${info.GameMode}</h3>
-    <h3>Map Id: ${info.MapLabel}</h3>
-    <h3>Round State: ${info.RoundState}</h3>
-    <h3>Team Score: ${info.Teams ? `${info.Team0Score} - ${info.Team1Score}` : "NA"}</h3>`;
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.PLAYER_LIST, (dataset) => {
-    const infoDiv = document.querySelector(".player-list");
-    const players = dataset.data;
-    infoDiv.innerHTML = `
-    <h2>Connected:</h2>
-    <ul>
-    ${players.reduce((acc, player) => (acc + `<li><h3>${player.Username}</h3><h4>${player.UniqueId}</h4></li>`), "") || "<li>No Players Connected</li>"}
-    </ul>`;
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.MOD_LIST, (dataset) => {
-    const infoDiv = document.querySelector(".mod-list");
-    const players = dataset.data;
-    infoDiv.innerHTML = `
-    <h3>Moderators:</h3>
-    <ul>
-    ${players.reduce((acc, player) => (acc + `<li><h4>${player}</h4><button class="remove-button" data-id="${player}">Remove</button></li>`), "") || "<li>No Moderators</li>"}
-    </ul>`;
-    infoDiv.querySelectorAll(".remove-button").forEach(b => b.addEventListener("click", e => {
-        e.preventDefault();
-        if (e.target.dataset.id !== undefined) {
-            PavlovServer.removeMod(e.target.dataset.id);
-        }
-    }));
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.BAN_LIST, (dataset) => {
-    const infoDiv = document.querySelector(".banned-list");
-    const players = dataset.data;
-    infoDiv.innerHTML = `
-    <h3>Banned:</h3>
-    <ul>
-    ${players.reduce((acc, player) => (acc + `<li><h4>${player}</h4><button class="remove-button" data-id="${player}">Remove</button></li>`), "") || "<li>No Banned Players</li>"}
-    </ul>`;
-    infoDiv.querySelectorAll(".remove-button").forEach(b => b.addEventListener("click", e => {
-        e.preventDefault();
-        if (e.target.dataset.id !== undefined) {
-            PavlovServer.removeBan(e.target.dataset.id);
-        }
-    }));
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_ROTATION, (dataset) => {
-    const infoDiv = document.querySelector(".map-rotation");
-    const maps = dataset.data;
-    infoDiv.innerHTML = `
-    <h2>Rotation:</h2>
-    <ul>
-    ${maps.reduce((acc, map) => (acc + `<li><h3>Map Id: ${map.MapId} Game Mode: ${map.GameMode}</h3><button class="remove-button" data-id="${map.MapId}" data-mode="${map.GameMode}">Remove</button></li>`), "") || "<li>No Maps in rotation</li>"}
-    </ul>`;
-    infoDiv.querySelectorAll(".remove-button").forEach(b => b.addEventListener("click", e => {
-        e.preventDefault();
-        if (e.target.dataset.id !== undefined && e.target.dataset.mode !== undefined) {
-            PavlovServer.removeMapRotation(e.target.dataset.id, e.target.dataset.mode);
-        }
-    }));
-});
-
-let selectedMapId = null;
-DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_LIST, (dataset) => {
-    const maps = dataset.data;
-    const mapSelect = document.querySelector(".map-swap-select");
-    mapSelect.innerHTML = `
-        ${maps.reduce((acc, map) => (acc + `<option value="${map.id}" ${map.id === selectedMapId ? "selected" : ""} >${map.name}</option>`), "")}
-        <option class="workshop-map-option" value="">Select from workshop</option>`;
-    mapSelect.querySelector(".workshop-map-option").addEventListener("click", e => {
-        e.preventDefault();
-        document.querySelector(".workshop-search-wrapper").hidden = false;
-    });
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.MODE_LIST, (dataset) => {
-    const modes = dataset.data;
-    const mapSelect = document.querySelector(".map-mode-select");
-    mapSelect.innerHTML = modes.reduce((acc, mode) => (acc + ` <option value="${mode.id}">${mode.name}</option> `), "");
-});
-
-DatasetManager.addDataListener(DEFAULT_DATASETS.WORKSHOP_RESULTS, (dataset) => {
-    const resDiv = document.querySelector(".workshop-results");
-    const results = dataset.data;
-    resDiv.innerHTML = `<h3>Result Count: ${results.totalCount}</h3>
-    <ul>
-        ${results.maps.reduce((acc, map) => (acc + `<li class="workshop-result" data-id="UGC${map.id}" data-name="${map.title}" style="background-image: url('${map.image}');"><div><h3>${map.title}</h3><p>${map.description}</p></div></li>`), "")}
-    </ul>
-    <button class="workshop-next-button">Next Page</button>`;
-    resDiv.querySelectorAll("li").forEach(li => {
-        li.addEventListener("click", e => {
-            e.preventDefault();
-            const resLi = e.target.closest(".workshop-result");
-            if (resLi !== null) {
-                const mapList = DatasetManager.getData(DEFAULT_DATASETS.MAP_LIST);
-                const newMap = { id: resLi.dataset.id, name: resLi.dataset.name };
-                if (mapList.find(m => m.id === newMap.id) === undefined) {
-                    mapList.push(newMap);
-                }
-
-                selectedMapId = newMap.id;
-                DatasetManager.setData(DEFAULT_DATASETS.MAP_LIST, mapList);
-                document.querySelector(".workshop-search-wrapper").hidden = true;
-            }
-        });
-    });
-
-    resDiv.querySelector(".workshop-next-button").addEventListener("click", async e => {
-        e.preventDefault();
-        try {
-            const res = await fetch(`/map/search?next=${results.next}`);
-            const text = decodeURI(await res.text());
-            DatasetManager.setData(DEFAULT_DATASETS.WORKSHOP_RESULTS, JSON.parse(text));
-        } catch (e) {
-            console.error("Search Error: ", e);
-        }
-    });
-});
-
-document.querySelector(".rotate-button").addEventListener("click", e => {
-    e.preventDefault();
-    PavlovServer.rotateMap();
-});
-
-document.querySelector(".add-rotation-button").addEventListener("click", e => {
-    e.preventDefault();
-    const mapId = document.querySelector(".map-swap-select").value;
-    const modeId = document.querySelector(".map-mode-select").value;
-    PavlovServer.addMapRotation(mapId, modeId);
-});
-
-document.querySelector(".set-map-button").addEventListener("click", e => {
-    e.preventDefault();
-    const mapId = document.querySelector(".map-swap-select").value;
-    const modeId = document.querySelector(".map-mode-select").value;
-    PavlovServer.switchMap(mapId, modeId);
-});
+DatasetManager.addDataListener(DEFAULT_DATASETS.SERVER_INFO, DOMBuilder.updateServerInfo);
+DatasetManager.addDataListener(DEFAULT_DATASETS.PLAYER_LIST, DOMBuilder.updatePlayerList);
+DatasetManager.addDataListener(DEFAULT_DATASETS.MOD_LIST, DOMBuilder.updateModeratorList);
+DatasetManager.addDataListener(DEFAULT_DATASETS.BAN_LIST, DOMBuilder.updateBanList);
+DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_ROTATION, DOMBuilder.updateMapRotation);
+DatasetManager.addDataListener(DEFAULT_DATASETS.WORKSHOP_RESULTS, DOMBuilder.updateWorkshopResults);
+DatasetManager.addDataListener(DEFAULT_DATASETS.MODE_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.MODE}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
+DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.MAP}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value, true)));
+DatasetManager.addDataListener(DEFAULT_DATASETS.ITEM_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.ITEM}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
+DOMBuilder.updateCustomCommand();
 
 document.querySelector(".workshop-search-wrapper").addEventListener("click", e => {
     const wrapper = document.querySelector(".workshop-search-wrapper");
@@ -239,6 +104,10 @@ document.querySelector(".workshop-search-form").addEventListener("submit", async
     e.preventDefault();
     try {
         const res = await fetch(`/map/search?query=${encodeURI(e.target[0].value)}`);
+        if (res.status !== 200) {
+            throw new Error("Status code not 200");
+        }
+
         const text = decodeURI(await res.text());
         DatasetManager.setData(DEFAULT_DATASETS.WORKSHOP_RESULTS, JSON.parse(text));
     } catch (e) {
@@ -246,94 +115,64 @@ document.querySelector(".workshop-search-form").addEventListener("submit", async
     }
 });
 
-document.querySelector(".command-input").innerHTML = `
-    <h3>Select Command</h3>
-    <select class="command-select">
-        ${PavlovServer.COMMAND_LIST.reduce((acc, cmd, idx) => acc + `<option value="${idx}" title="${cmd.tooltip}">${cmd.commandName}</option>`, "")}
-    </select>
-    <form data-count="1" data-command="0" class="command-form">
-        <h3>Enter Parameters</h3>
-        <input name="0" type="text" placeholder="Enter Text" value="" />
-        <br/>
-        <h3 class="inline-block">Send Command</h3>
-        <button>Send</button>
-    </form>`;
+const onOpenWorkshopResults = e => {
+    activeWorkshopMapSelect = e.closest("select");
+    document.querySelector(".workshop-search-wrapper").hidden = false;
+};
 
-document.querySelectorAll(".command-select option").forEach(opt => opt.addEventListener("click", e => {
-    e.preventDefault();
-    const commandIndex = parseInt(e.target.value);
-    const form = document.querySelector(".command-form");
-    const command = PavlovServer.COMMAND_LIST[commandIndex];
-    const parameters = command.parameterTypes;
-    form.dataset.count = parameters.length;
-    form.dataset.command = commandIndex;
-    const createParamInput = (acc, param, index) => {
-        let input = "";
-        switch (param.type) {
-            case PavlovServer.PARAM_TYPE.BOOL:
-                input = `<select name="${index}"><option value="true">True</option><option value="false">False</option></select>`
-                break;
-            case PavlovServer.PARAM_TYPE.INT:
-                input = `<input name="${index}" type="number" ${param.min ? `min="${param.min}"` : ""} ${param.max ? `max="${param.max}"` : ""} placeholder="Enter Number" value="" />`
-                break;
-            case PavlovServer.PARAM_TYPE.STRING:
-                input = `<input name="${index}" type="text" placeholder="Enter Text" value="" />`
-                break;
-            case PavlovServer.PARAM_TYPE.TEAM:
-                input = `<select name="${index}">${PavlovServer.DEFAULT_TEAMS.reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.SKIN:
-                input = `<select name="${index}">${PavlovServer.DEFAULT_SKINS.reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.AMMO_LIMIT:
-                input = `<select name="${index}">${PavlovServer.DEFAULT_AMMO_LIMITS.reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.TTT_ROLE:
-                input = `<select name="${index}">${PavlovServer.DEFAULT_TTT_ROLES.reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.ITEM:
-                input = `<select name="${index}">${DatasetManager.getData(DEFAULT_DATASETS.ITEM_LIST).reduce((acc, t) => acc + `<option value="${t}">${t}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.PLAYER_ID:
-                input = `<select name="${index}">${DatasetManager.getData(DEFAULT_DATASETS.PLAYER_LIST).reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.MODE:
-                input = `<select name="${index}">${DatasetManager.getData(DEFAULT_DATASETS.MODE_LIST).reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
-            case PavlovServer.PARAM_TYPE.MAP:
-                input = `<select name="${index}">${DatasetManager.getData(DEFAULT_DATASETS.MAP_LIST).reduce((acc, t) => acc + `<option value="${t.id}">${t.name}</option>`, "")}</select>`
-                break;
+const onWorkshopResultSelected = e => {
+    const resultId = e.dataset.id;
+    const resultName = e.dataset.name;
+    const maps = DatasetManager.getData(DEFAULT_DATASETS.MAP_LIST);
+    if (maps.find(m => m.id === resultId) === undefined) {
+        maps.push({ id: resultId, name: resultName });
+        DatasetManager.setData(DEFAULT_DATASETS.MAP_LIST, maps);
+    }
+
+    if (activeWorkshopMapSelect !== null) {
+        activeWorkshopMapSelect.innerHTML = DOMBuilder.createSelectOptions({ data: maps }, resultId, true);
+        document.querySelector(".workshop-search-wrapper").hidden = true;
+        activeWorkshopMapSelect = null;
+    }
+};
+
+const onWorkshopNextPage = async e => {
+    try {
+        const res = await fetch(`/map/search?next=${DatasetManager.getData(DEFAULT_DATASETS.WORKSHOP_RESULTS).next}`);
+        if (res.status !== 200) {
+            throw new Error("Status code not 200");
         }
 
-        return acc + input;
-    };
-
-    form.innerHTML = `
-        ${parameters.length > 0 ? "<h3>Enter Parameters</h3>" : ""}
-        ${parameters.reduce(createParamInput, "")}
-        <br/>
-        <h3 class="inline-block">Send Command</h3>
-        <button>Send</button>`;
-}));
-
-document.querySelector(".command-form").addEventListener("submit", async e => {
-    e.preventDefault();
-    let resultText = "";
-    let commandParameters = "";
-    for (let i = 0; i < parseInt(e.target.dataset.count); ++i) {
-        commandParameters = commandParameters + ` ${e.target.querySelector(`[name="${i}"]`).value}`;
-    }
-
-    try {
-        const res = await PavlovServer.COMMAND_LIST[parseInt(e.target.dataset.command)](e.target[0].value);
-        resultText = JSON.stringify(res);
+        const text = decodeURI(await res.text());
+        console.log(text);
+        DatasetManager.setData(DEFAULT_DATASETS.WORKSHOP_RESULTS, JSON.parse(text));
     } catch (e) {
-        console.error(`Failed to execute command, error:`, e);
-        resultText = "Failed to execute command";
+        console.error("Search Error: ", e);
     }
+};
 
-    document.querySelector(".command-output").innerText = resultText;
-});
+const onCommandFormSubmit = async e => {
+    const commandName = e.dataset.command;
+    const output = document.querySelector(".command-output");
+    try {
+        const command = PavlovServer[commandName];
+        if (command === undefined) {
+            throw new Error("Unknown command");
+        }
+
+        const paramCount = parseInt(e.dataset.count);
+        const params = [];
+        for (let i = 0; i < paramCount; ++i) {
+            params.push(e.querySelector(`[name="${i}"]`).value);
+        }
+
+        const res = await command(...params);
+        output.innerText = JSON.stringify(res);
+    } catch (e) {
+        output.innerText = `Failed to execute command "${commandName}"`;
+        console.error(`Failed to execute command "${commandName}"`, e);
+    }
+};
 
 const localMapList = localStorage.getItem(DEFAULT_DATASETS.MAP_LIST);
 DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_LIST, dataset => localStorage.setItem(DEFAULT_DATASETS.MAP_LIST, JSON.stringify(dataset.data)));

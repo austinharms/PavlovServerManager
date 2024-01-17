@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pavlov RCon</title>
     <script src="pavlovserver.js" async></script>
+    <script src="dombuilder.js" async></script>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,20 +14,45 @@
         <div class="server-wrapper">
             <h2>Server</h2>
             <div class="server-info"></div>
+            <div>
+                <h3 class="inline-block">Pin</h3>
+                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="setServerPin">
+                    <input name="0" type="number" max="9999" min="0" placeholder="Enter Pin" />
+                    <button>Set Pin</button>
+                </form>
+                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="setServerPin">
+                    <button>Clear Pin</button>
+                </form>
+                <br/>
+                <h3 class="inline-block">Name</h3>
+                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="1" data-command="setServerName">
+                    <input name="0" type="text" placeholder="Enter Name" />
+                    <button>Set</button>
+                </form>
+            </div>
         </div>
         <div class="map-wrapper">
             <h2>Maps</h2>
-            <div class="map-rotation"></div>
+            <div>
+                <h3>Rotation:</h3>
+                <ul class="map-rotation">
+                    <li>No Maps in rotation</li>
+                </ul>
+            </div>
             <div class="map-controls">
-                <h2>Swap</h2>
                 <h3 class="inline-block">Map Rotation:</h3>
                 <button class="rotate-button">Rotate</button>
-                <form>
-                    <h3 class="inline-block">Select Map: </h3>
-                    <select class="map-swap-select" name="map-id"></select>
-                    <select class="map-mode-select" name="map-mode"></select>
-                    <button class="add-rotation-button">Add Rotation</button>
-                    <button class="set-map-button">Swap Map</button>
+                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="2" data-command="switchMap">
+                    <h3 class="inline-block">Swap: </h3>
+                    <select class="param-select" data-type-id="3" name="0"></select>
+                    <select class="param-select" data-type-id="1" name="1"></select>
+                    <button>Swap</button>
+                </form>
+                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="2" data-command="addMapRotation">
+                    <h3 class="inline-block">Add Rotation: </h3>
+                    <select class="param-select" data-type-id="3" name="0"></select>
+                    <select class="param-select" data-type-id="1" name="1"></select>
+                    <button>Add</button>
                 </form>
             </div>
             <div class="workshop-search-wrapper" hidden>
@@ -42,14 +68,29 @@
         </div>
         <div class="player-list-wrapper">
             <h2>Players</h2>
-            <div class="player-list"></div>
-            <div class="mod-list"></div>
-            <div class="banned-list"></div>
+            <div>
+                <h3>Connected:</h3>
+                <ul class="player-list">
+                    <li>No Players Connected</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Moderators:</h3>
+                <ul class="mod-list">
+                    <li>No Moderators</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Bans:</h3>
+                <ul class="banned-list">
+                    <li>No Banned Players</li>
+                </ul>
+            </div>
         </div>
         <div class="command-wrapper">
             <h2>Commands</h2>
             <div class="command-input">
-                <h3>Enter Command</h3>
+                <h3>Select Command</h3>
             </div>
             <div>
                 <h3>Command Output</h3>
