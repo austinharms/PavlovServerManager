@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,54 +10,52 @@
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <main>
         <div class="server-wrapper">
-            <h2>Server</h2>
-            <div class="server-info"></div>
-            <div>
-                <h3 class="inline-block">Pin</h3>
-                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="setServerPin">
-                    <input name="0" type="number" max="9999" min="0" placeholder="Enter Pin" />
-                    <button>Set Pin</button>
-                </form>
-                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="setServerPin">
-                    <button>Clear Pin</button>
-                </form>
-                <br/>
-                <h3 class="inline-block">Name</h3>
-                <form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="1" data-command="setServerName">
-                    <input name="0" type="text" placeholder="Enter Name" />
-                    <button>Set</button>
-                </form>
-            </div>
+            <h2>Server Info</h2>
+            <section class="server-info"></section>
+            <br />
+            <section>
+                <h3 class="inline-block">Set Name</h3>
+                <embed type="command-form" data-command="setServerName" data-button-name="Set" />
+            </section>
+            <section>
+                <h3 class="inline-block">Set Pin</h3>
+                <embed type="command-form" data-command="setServerPin" data-button-name="Set Pin" />
+                <embed type="command-form" data-command="setServerPin" data-button-name="Clear Pin" data-hidden="true" data-count="1" data-1="" />
+            </section>
+            <section>
+                <h3 class="inline-block">Whitelist Enabled:</h3>
+                <embed type="command-form" data-command="setWhitelistEnabled" data-button-name="Set" />
+            </section>
+            <section>
+                <h3 class="inline-block">Comp Enabled:</h3>
+                <embed type="command-form" data-command="setCompEnabled" data-button-name="Set" />
+            </section>
+            <section class="game-mode-commands">
+            </section>
         </div>
         <div class="map-wrapper">
             <h2>Maps</h2>
-            <div>
-                <h3>Rotation:</h3>
-                <ul class="map-rotation">
-                    <li>No Maps in rotation</li>
-                </ul>
-            </div>
-            <div class="map-controls">
-                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="0" data-command="rotateMap">
-                    <h3 class="inline-block">Map Rotation:</h3>
-                    <button>Rotate</button>
-                </form>
-                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="2" data-command="switchMap">
-                    <h3 class="inline-block">Swap: </h3>
-                    <select class="param-select" data-type-id="3" name="0"></select>
-                    <select class="param-select" data-type-id="1" name="1"></select>
-                    <button>Swap</button>
-                </form>
-                <form class="command-form" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-count="2" data-command="addMapRotation">
-                    <h3 class="inline-block">Add Rotation: </h3>
-                    <select class="param-select" data-type-id="3" name="0"></select>
-                    <select class="param-select" data-type-id="1" name="1"></select>
-                    <button>Add</button>
-                </form>
-            </div>
+            <h3>Rotation:</h3>
+            <ul class="map-rotation">
+                <li>No Maps in rotation</li>
+            </ul>
+            <br />
+            <section>
+                <h3 class="inline-block">Rotate Map:</h3>
+                <embed type="command-form" data-command="rotateMap" data-button-name="Rotate" />
+            </section>
+            <section>
+                <h3 class="inline-block">Set Map:</h3>
+                <embed type="command-form" data-command="switchMap" data-button-name="Set" />
+            </section>
+            <section>
+                <h3 class="inline-block">Add Map Rotation:</h3>
+                <embed type="command-form" data-command="addMapRotation" data-button-name="Add" />
+            </section>
             <div class="workshop-search-wrapper" hidden>
                 <div class="workshop-search">
                     <form class="workshop-search-form">
@@ -70,34 +69,29 @@
         </div>
         <div class="player-list-wrapper">
             <h2>Players</h2>
-            <div>
-                <h3>Connected:</h3>
-                <ul class="player-list">
-                    <li>No Players Connected</li>
-                </ul>
-            </div>
-            <div>
-                <h3>Moderators:</h3>
-                <ul class="mod-list">
-                    <li>No Moderators</li>
-                </ul>
-            </div>
-            <div>
-                <h3>Bans:</h3>
-                <ul class="banned-list">
-                    <li>No Banned Players</li>
-                </ul>
-            </div>
+            <h3>Connected:</h3>
+            <ul class="player-list">
+                <li>No Players Connected</li>
+            </ul>
+            <br />
+            <h3>Moderators:</h3>
+            <ul class="mod-list">
+                <li>No Moderators</li>
+            </ul>
+            <br />
+            <h3>Bans:</h3>
+            <ul class="banned-list">
+                <li>No Banned Players</li>
+            </ul>
         </div>
         <div class="command-wrapper">
             <h2>Commands</h2>
-            <div class="command-input">
+            <section class="command-input">
                 <h3>Select Command</h3>
-            </div>
-            <div>
-                <h3>Command Output</h3>
-                <p class="command-output">Command output will be here</p>
-            </div>
+            </section>
+            <br />
+            <h3>Command Output</h3>
+            <p class="command-output">Command output will be here</p>
         </div>
     </main>
 </body>

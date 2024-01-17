@@ -76,7 +76,7 @@ const PavlovServer = {
         ["setTTTTimerPaused", "TTTPauseTimer", "TTTPauseTimer", "TTTPauseTimer", ["Pauses the TTT round timer", { required: true, type: PavlovServer.PARAM_TYPE.BOOL }]], // may not be right
         ["setPlayerTTTKarma", "TTTSetKarma", "TTTSetKarma", "TTTSetKarma", ["Sets the players TTT karma", { required: true, type: PavlovServer.PARAM_TYPE.PLAYER_ID }, { required: true, type: PavlovServer.PARAM_TYPE.INT }]], // may not be right
         ["setPlayerTTTRole", "TTTSetRole", "TTTSetRole", "TTTSetRole", ["Sets the players TTT Role", { required: true, type: PavlovServer.PARAM_TYPE.PLAYER_ID }, { required: true, type: PavlovServer.PARAM_TYPE.TTT_ROLE }]], // may not be right
-        ["SetCompEnabled", "EnableCompMode", "EnableCompMode", "EnableCompMode", ["Enable/Disable competitive mode", { required: true, type: PavlovServer.PARAM_TYPE.BOOL }]],
+        ["setCompEnabled", "EnableCompMode", "EnableCompMode", "EnableCompMode", ["Enable/Disable competitive mode", { required: true, type: PavlovServer.PARAM_TYPE.BOOL }]],
         ["shutdownServer", "Shutdown", "Shutdown", "Shutdown", ["Shutdown the server"]], // may not be right
     ].forEach(cmd => {
         PavlovServer[cmd[0]] = async (...args) => {

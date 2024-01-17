@@ -3,7 +3,6 @@ const DOMBuilder = {};
 DOMBuilder.updateServerInfo = ({ data }) => {
     const targetDiv = document.querySelector(".server-info");
     targetDiv.innerHTML = `
-    <h2>Info</h2>
     <h3>Server Name: ${data.ServerName}</h3>
     <h3>Player Count: ${data.PlayerCount}</h3>
     <h3>Game Mode: ${data.GameMode}</h3>
@@ -46,7 +45,7 @@ DOMBuilder.updateCustomCommand = () => {
     targetDiv.innerHTML = `
     <h3 class="inline-block">Select Command:<h3>
     <select class="custom-command-select" onchange='document.querySelector(".command-input-form-wrapper").innerHTML = DOMBuilder.createCommandForm(this.value);'>
-    ${PavlovServer.COMMAND_LIST.reduce((acc, cmd, idx) => acc + `<option value="${cmd.commandName}" ${idx === 0?"selected":""}>${cmd.commandName}</option>`, "")}
+    ${PavlovServer.COMMAND_LIST.reduce((acc, cmd, idx) => acc + `<option value="${cmd.commandName}" ${idx === 0 ? "selected" : ""}>${cmd.commandName}</option>`, "")}
     </select>
     <br/>
     <section class="command-input-form-wrapper" >
@@ -54,7 +53,24 @@ DOMBuilder.updateCustomCommand = () => {
     </section>`;
 };
 
-DOMBuilder.createSelectOptions = ({ data }, selected = null, hasWorkshop = false) => data.reduce((acc, val) => acc + `<option ${selected === val.id ? "selected" : ""} value="${val.id}">${val.name}</option>`, "") + (hasWorkshop?`<option value="WORKSHOP" onclick="onOpenWorkshopResults(this)">Select from workshop</option>`:"");
+DOMBuilder.createEmbedForms = () => {
+    document.querySelectorAll(`embed[type="command-form"]`).forEach(embed => {
+        try {
+            const defaultValues = [];
+            const defaultCount = parseInt(embed.dataset.count || "0");
+            for (let i = 0; i < defaultCount; ++i) {
+                defaultValues.push(embed.dataset[`${i}`]);
+            }
+
+            embed.insertAdjacentHTML("afterend", DOMBuilder.createCommandForm(embed.dataset.command, embed.dataset.buttonName || "Send", defaultValues, embed.dataset.hidden || false));
+            embed.remove();
+        } catch (e) {
+            console.error("Failed to create embed command form", e);
+        }
+    });
+};
+
+DOMBuilder.createSelectOptions = ({ data }, selected = null, hasWorkshop = false) => data.reduce((acc, val) => acc + `<option ${selected === val.id ? "selected" : ""} value="${val.id}">${val.name}</option>`, "") + (hasWorkshop ? `<option value="WORKSHOP" onclick="onOpenWorkshopResults(this)">Select from workshop</option>` : "");
 
 DOMBuilder.createCommandForm = (commandName, buttonName = "Send", defaultValues = [], hidden = false) => {
     const command = PavlovServer[commandName];

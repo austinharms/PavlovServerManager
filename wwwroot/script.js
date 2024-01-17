@@ -90,6 +90,7 @@ DatasetManager.addDataListener(DEFAULT_DATASETS.MODE_LIST, (dataset) => document
 DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.MAP}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value, true)));
 DatasetManager.addDataListener(DEFAULT_DATASETS.ITEM_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.ITEM}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
 DOMBuilder.updateCustomCommand();
+DOMBuilder.createEmbedForms();
 
 document.querySelector(".workshop-search-wrapper").addEventListener("click", e => {
     const wrapper = document.querySelector(".workshop-search-wrapper");

@@ -18,9 +18,16 @@ h5,
 ul,
 li,
 div,
-button {
+button,
+section {
     margin: 0;
     padding: 0;
+}
+
+embed {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
 }
 
 button {
