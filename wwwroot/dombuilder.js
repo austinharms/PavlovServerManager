@@ -14,7 +14,7 @@ DOMBuilder.updateServerInfo = ({ data }) => {
 
 DOMBuilder.updatePlayerList = ({ data }) => {
     const targetDiv = document.querySelector(".player-list");
-    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h3>${player.Username}</h3><h4>${player.UniqueId}</h4></li>`), "") || "<li>No Players Connected</li>";
+    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h4>${player.name} ${player.id}</h4>${DOMBuilder.createCommandForm("addModerator", "Add Mod", [player.id], true)}${DOMBuilder.createCommandForm("addBan", "Ban", [player.id], true)}${DOMBuilder.createCommandForm("kickPlayer", "Kick", [player.id], true)}${DOMBuilder.createCommandForm("killPlayer", "Kill", [player.id], true)}${DOMBuilder.createCommandForm("getPlayerDetails", "Details", [player.id], true)}</li>`), "") || "<li>No Players Connected</li>";
 };
 
 DOMBuilder.updateModeratorList = ({ data }) => {
@@ -45,11 +45,13 @@ DOMBuilder.updateCustomCommand = () => {
     const targetDiv = document.querySelector(".command-input");
     targetDiv.innerHTML = `
     <h3 class="inline-block">Select Command:<h3>
-    <select class="custom-command-select" onchange='document.querySelector(".command-input .command-form").innerHTML = DOMBuilder.createCommandForm(this.value);'>
+    <select class="custom-command-select" onchange='document.querySelector(".command-input-form-wrapper").innerHTML = DOMBuilder.createCommandForm(this.value);'>
     ${PavlovServer.COMMAND_LIST.reduce((acc, cmd, idx) => acc + `<option value="${cmd.commandName}" ${idx === 0?"selected":""}>${cmd.commandName}</option>`, "")}
     </select>
     <br/>
-    ${DOMBuilder.createCommandForm(PavlovServer.COMMAND_LIST[0].commandName)}`;
+    <section class="command-input-form-wrapper" >
+        ${DOMBuilder.createCommandForm(PavlovServer.COMMAND_LIST[0].commandName)}
+    </section>`;
 };
 
 DOMBuilder.createSelectOptions = ({ data }, selected = null, hasWorkshop = false) => data.reduce((acc, val) => acc + `<option ${selected === val.id ? "selected" : ""} value="${val.id}">${val.name}</option>`, "") + (hasWorkshop?`<option value="WORKSHOP" onclick="onOpenWorkshopResults(this)">Select from workshop</option>`:"");

@@ -193,8 +193,8 @@ if (localModeList !== null) {
 // array format is [dataset name, dataCallbackFunction, fetch interval(ms), default value(optional)]
 [
     [DEFAULT_DATASETS.SERVER_INFO, PavlovServer.getInfo, 3000, {}],
-    [DEFAULT_DATASETS.PLAYER_LIST, PavlovServer.getPlayers, 3000, []],
-    [DEFAULT_DATASETS.ITEM_LIST, PavlovServer.getItems, 10000, []],
+    [DEFAULT_DATASETS.PLAYER_LIST, async () => (await PavlovServer.getPlayers()).map(p => ({ id: p.UniqueId, name: p.Username })), 3000, []],
+    [DEFAULT_DATASETS.ITEM_LIST, async () => (await PavlovServer.getItems()).map(i => ({ id: i, name: i })), 10000, []],
     [DEFAULT_DATASETS.BAN_LIST, PavlovServer.getBans, 30000, []],
     [DEFAULT_DATASETS.MOD_LIST, PavlovServer.getModerators, 30000, []],
     [DEFAULT_DATASETS.MAP_ROTATION, PavlovServer.getMapRotation, 10000, []],
