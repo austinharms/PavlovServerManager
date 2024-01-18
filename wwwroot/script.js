@@ -89,6 +89,7 @@ DatasetManager.addDataListener(DEFAULT_DATASETS.WORKSHOP_RESULTS, DOMBuilder.upd
 DatasetManager.addDataListener(DEFAULT_DATASETS.MODE_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.MODE}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
 DatasetManager.addDataListener(DEFAULT_DATASETS.MAP_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.MAP}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value, true)));
 DatasetManager.addDataListener(DEFAULT_DATASETS.ITEM_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.ITEM}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
+DatasetManager.addDataListener(DEFAULT_DATASETS.PLAYER_LIST, (dataset) => document.querySelectorAll(`.param-select[data-type-id="${PavlovServer.PARAM_TYPE.PLAYER_ID}"]`).forEach(e => e.innerHTML = DOMBuilder.createSelectOptions(dataset, e.value)));
 DOMBuilder.updateCustomCommand();
 DOMBuilder.createEmbedForms();
 

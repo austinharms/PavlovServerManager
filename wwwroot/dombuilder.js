@@ -8,7 +8,7 @@ DOMBuilder.updateServerInfo = ({ data }) => {
     <h3>Game Mode: ${data.GameMode}</h3>
     <h3>Map Id: ${data.MapLabel}</h3>
     <h3>Round State: ${data.RoundState}</h3>
-    <h3>Team Score: ${data.Teams ? `${info.Team0Score} - ${info.Team1Score}` : "NA"}</h3>`;
+    <h3>Team Score: ${data.Teams ? `${data.Team0Score} - ${data.Team1Score}` : "NA"}</h3>`;
 };
 
 DOMBuilder.updatePlayerList = ({ data }) => {
