@@ -7,37 +7,36 @@ const HTTP_PORT = process.env.HTTP_PORT || 8080;
 const RCON_PORT = process.env.RCON_PORT || 15777;
 const STEAM_API_KEY = process.env.STEAM_API_KEY;
 const SERVER_ADDRESS = process.env.SERVER_ADDRESS || "127.0.0.1";
+const RCON_PASS = process.env.RCON_PASS;
 const WWWROOT = path.join(__dirname, "wwwroot");
+const server = new WebServer(HTTP_PORT, WWWROOT, STEAM_API_KEY);
 
-const rcon = new RCon(SERVER_ADDRESS, RCON_PORT, "PTECSVR");
-const server = new WebServer(HTTP_PORT, WWWROOT, STEAM_API_KEY, rcon);
-
-// Attempts to reconnect if RCon gets disconnected
-const reconnectRCon = async () => {
+// This is a hacky way of reconnecting if we lose connection or if there is a socket error
+const cycleRConConnection = async () => {
     try {
-        if (!rcon.getConnected()) {
-            console.warn("RCon disconnected, reconnecting");
-            await rcon.connect();
-        }
+        const rcon = new RCon(SERVER_ADDRESS, RCON_PORT, RCON_PASS);
+        await rcon.connect();
+        server.setRCon(rcon);
     } catch (e) {
-        console.error("Failed to reconnect RCon", e);
+        console.error("Failed to connect RCon", e);
     }
 };
 
-// Hack: prevents crash on unhandled rejected promise
+// Prevents crash on unhandled rejected promise
 process.on('unhandledRejection', (error, promise) => {
     console.error("Promise error", promise);
 });
 
 (async () => {
-    await rcon.connect();
-    const reconnectInterval = setInterval(reconnectRCon, 3000);
-    console.log("RCon open:", RCON_PORT);
-    await server.start(rcon);
+    await cycleRConConnection();
+    const refreshInterval = setInterval(cycleRConConnection, 10000);
+    await server.start();
     console.log("Server open:", HTTP_PORT);
     await server.waitForClose();
-    clearInterval(reconnectInterval);
+    clearInterval(refreshInterval);
     console.log("Server closed");
-    await rcon.disconnect();
-    console.log("RCon closed");
+    const rcon = server.getRCon();
+    if (rcon !== null) {
+        await rcon.disconnect();
+    }
 })();

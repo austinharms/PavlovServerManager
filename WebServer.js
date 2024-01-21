@@ -4,7 +4,7 @@ const https = require("https");
 const fs = require("fs");
 const path = require("path");
 
-function WebServer(port, rootDir, steamApiKey, rcon) {
+function WebServer(port, rootDir, steamApiKey, rcon = null) {
     const self = this;
     this.port = port;
     this._rootDir = rootDir;
@@ -113,6 +113,11 @@ WebServer.prototype._requestHandler = async function (req, res) {//(req: http.In
                 return;
             }
 
+            if (this._rcon === null) {
+                this._writeJSONErrorResponse(res, 503, "Try again later", commandResult);
+                return;
+            }
+
             const commandResult = await this._rcon.sendCommand(command).catch(e => e);
             if (RCon.isError(commandResult)) {
                 switch (commandResult) {
@@ -173,6 +178,14 @@ WebServer.prototype.start = function () {
 
 WebServer.prototype.waitForClose = function () {
     return this._closeP;
+};
+
+WebServer.prototype.setRCon = function(rcon) {
+    this._rcon = rcon;
+};
+
+WebServer.prototype.getRCon = function() {
+    return this._rcon;
 };
 
 module.exports = WebServer;
