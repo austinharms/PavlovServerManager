@@ -42,10 +42,13 @@ RCon.prototype.connect = async function () {
         this._socket.once("close", this._destroySocket.bind(this));
         this._socket.on("data", this._socketDataHandler.bind(this));
         // Start auth early so it does not miss the first socket message
-        const authRequest = this._authenticate();
+        const authRequest = this._authenticate().catch(e => e);
         await this._connectSocket();
         // Now the socket is connected wait for auth to complete
-        await authRequest;
+        const authRes = await authRequest;
+        if (RCon.isError(authRes)) {
+            throw authRes;
+        }
     } catch (e) {
         if (RCon.isError(e)) {
             throw e;

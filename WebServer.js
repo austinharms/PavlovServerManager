@@ -114,7 +114,7 @@ WebServer.prototype._requestHandler = async function (req, res) {//(req: http.In
             }
 
             if (this._rcon === null) {
-                this._writeJSONErrorResponse(res, 503, "Try again later", commandResult);
+                this._writeJSONErrorResponse(res, 503, "Try again later");
                 return;
             }
 

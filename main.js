@@ -9,34 +9,30 @@ const STEAM_API_KEY = process.env.STEAM_API_KEY;
 const SERVER_ADDRESS = process.env.SERVER_ADDRESS || "127.0.0.1";
 const RCON_PASS = process.env.RCON_PASS;
 const WWWROOT = path.join(__dirname, "wwwroot");
-const server = new WebServer(HTTP_PORT, WWWROOT, STEAM_API_KEY);
+const rcon = new RCon(SERVER_ADDRESS, RCON_PORT, RCON_PASS);
+const server = new WebServer(HTTP_PORT, WWWROOT, STEAM_API_KEY, rcon);
 
 // This is a hacky way of reconnecting if we lose connection or if there is a socket error
-const cycleRConConnection = async () => {
+const reconnectRCon = async () => {
     try {
-        const rcon = new RCon(SERVER_ADDRESS, RCON_PORT, RCON_PASS);
-        await rcon.connect();
-        server.setRCon(rcon);
+        if (!rcon.getConnected()) {
+            await rcon.connect();
+            console.log("Reconnected RCon");
+        }
     } catch (e) {
-        console.error("Failed to connect RCon", e);
+        console.error("Failed to reconnect RCon", e);
     }
 };
 
-// Prevents crash on unhandled rejected promise
-process.on('unhandledRejection', (error, promise) => {
-    console.error("Promise error", promise);
-});
-
 (async () => {
-    await cycleRConConnection();
-    const refreshInterval = setInterval(cycleRConConnection, 10000);
+    await rcon.connect();
+    console.log("RCon open:", RCON_PORT);
+    const reconnectInterval = setInterval(reconnectRCon, 3000);
     await server.start();
     console.log("Server open:", HTTP_PORT);
     await server.waitForClose();
-    clearInterval(refreshInterval);
+    clearInterval(reconnectInterval);
     console.log("Server closed");
-    const rcon = server.getRCon();
-    if (rcon !== null) {
-        await rcon.disconnect();
-    }
+    await rcon.disconnect();
+    console.log("RCon closed")
 })();
