@@ -123,3 +123,9 @@ li h4 {
     margin: 0;
     padding: 0.25em;
 }
+
+.admin-control {
+    /* Allow hiding admin controls */
+    /* This will NOT prevent them from still using admin commands */
+    /* display: none; */
+}

@@ -13,12 +13,12 @@ DOMBuilder.updateServerInfo = ({ data }) => {
 
 DOMBuilder.updatePlayerList = ({ data }) => {
     const targetDiv = document.querySelector(".player-list");
-    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h4>${player.name} ${player.id}</h4>${DOMBuilder.createCommandForm("addModerator", "Add Mod", [player.id], true)}${DOMBuilder.createCommandForm("addBan", "Ban", [player.id], true)}${DOMBuilder.createCommandForm("kickPlayer", "Kick", [player.id], true)}${DOMBuilder.createCommandForm("killPlayer", "Kill", [player.id], true)}${DOMBuilder.createCommandForm("getPlayerDetails", "Details", [player.id], true)}</li>`), "") || "<li>No Players Connected</li>";
+    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h4>${player.name} ${player.id}</h4>${DOMBuilder.createCommandForm("addModerator", "Add Mod", [player.id], true, true)}${DOMBuilder.createCommandForm("addBan", "Ban", [player.id], true, true)}${DOMBuilder.createCommandForm("kickPlayer", "Kick", [player.id], true)}${DOMBuilder.createCommandForm("killPlayer", "Kill", [player.id], true)}${DOMBuilder.createCommandForm("getPlayerDetails", "Details", [player.id], true)}</li>`), "") || "<li>No Players Connected</li>";
 };
 
 DOMBuilder.updateModeratorList = ({ data }) => {
     const targetDiv = document.querySelector(".mod-list");
-    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h4>${player}</h4>${DOMBuilder.createCommandForm("removeModerator", "Remove", [player], true)}</li>`), "") || "<li>No Moderators</li>";
+    targetDiv.innerHTML = data.reduce((acc, player) => (acc + `<li><h4>${player}</h4>${DOMBuilder.createCommandForm("removeModerator", "Remove", [player], true, true)}</li>`), "") || "<li>No Moderators</li>";
 };
 
 DOMBuilder.updateBanList = ({ data }) => {
@@ -28,7 +28,7 @@ DOMBuilder.updateBanList = ({ data }) => {
 
 DOMBuilder.updateMapRotation = ({ data }) => {
     const targetDiv = document.querySelector(".map-rotation");
-    targetDiv.innerHTML = data.reduce((acc, map) => (acc + `<li><h3>Map Id: ${map.MapId} Game Mode: ${map.GameMode}</h3>${DOMBuilder.createCommandForm("removeMapRotation", "Remove", [map.MapId, map.GameMode], true)}</li>`), "") || "<li>No Maps in rotation</li>"
+    targetDiv.innerHTML = data.reduce((acc, map) => (acc + `<li><h3>Map Id: ${map.MapId} Game Mode: ${map.GameMode}</h3>${DOMBuilder.createCommandForm("removeMapRotation", "Remove", [map.MapId, map.GameMode], true, true)}</li>`), "") || "<li>No Maps in rotation</li>"
 };
 
 DOMBuilder.updateWorkshopResults = ({ data }) => {
@@ -72,9 +72,9 @@ DOMBuilder.createEmbedForms = () => {
 
 DOMBuilder.createSelectOptions = ({ data }, selected = null, hasWorkshop = false) => data.reduce((acc, val) => acc + `<option ${selected === val.id ? "selected" : ""} value="${val.id}">${val.name}</option>`, "") + (hasWorkshop ? `<option value="WORKSHOP" onclick="onOpenWorkshopResults(this)">Select from workshop</option>` : "");
 
-DOMBuilder.createCommandForm = (commandName, buttonName = "Send", defaultValues = [], hidden = false) => {
+DOMBuilder.createCommandForm = (commandName, buttonName = "Send", defaultValues = [], hidden = false, admin = false) => {
     const command = PavlovServer[commandName];
-    return `<form class="command-form inline-block" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-command="${commandName}" data-count="${command.parameterTypes.length}" >${command.parameterTypes.reduce((acc, param, idx) => acc + DOMBuilder.createInputFromParameter(param, idx, defaultValues[idx] || "", hidden), "")}<button>${buttonName}</button></form>`;
+    return `<form class="command-form inline-block ${admin?"admin-control":""}" action="javascript:void(0);" onsubmit="onCommandFormSubmit(this)" data-command="${commandName}" data-count="${command.parameterTypes.length}" >${command.parameterTypes.reduce((acc, param, idx) => acc + DOMBuilder.createInputFromParameter(param, idx, defaultValues[idx] || "", hidden), "")}<button>${buttonName}</button></form>`;
 };
 
 DOMBuilder.createInputFromParameter = (param, index, defaultValue = "", hidden = false) => {
